@@ -6,16 +6,27 @@ class Item {
     private double price;
     private int quantity;
     private ShoppingCart.ItemType type;
+    private int discount;
+    private double total;
+
+    Item(String title, double price, int quantity, ShoppingCart.ItemType type) {
+        this.title = title;
+        this.price = price;
+        this.quantity = quantity;
+        this.type = type;
+        this.discount = calculateDiscount();
+        this.total = price * quantity * (100.00 - discount) / 100.00;
+    }
 
     /**
-     * Calculates item's discount.
+     * Returns item's discount.
      * For NEW item discount is 0%;
      * For SECOND_FREE item discount is 50% if quantity > 1
      * For SALE item discount is 70%
      * For each full 10 not NEW items item gets additional 1% discount,
      * but not more than 80% total
      */
-    public int calculateDiscount() {
+    private int calculateDiscount() {
         int discount = 0;
         switch (type) {
             case NEW:
@@ -39,16 +50,16 @@ class Item {
         return discount;
     }
 
+    public int getDiscount() {
+        return this.discount;
+    }
+
+    public double getTotal() {
+        return this.total;
+    }
+
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
     }
 
     public double getPrice() {
@@ -59,15 +70,7 @@ class Item {
         return this.quantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public ShoppingCart.ItemType getType() {
         return type;
-    }
-
-    public void setType(ShoppingCart.ItemType type) {
-        this.type = type;
     }
 }

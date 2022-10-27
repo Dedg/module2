@@ -33,22 +33,22 @@ class ShoppingCartTest {
     public static Stream testCalculateDiscountData(){
         return new ArrayList(
                 Arrays.asList(
-                        new Object[]{0, ShoppingCart.ItemType.NEW, 1},
-                        new Object[]{0, ShoppingCart.ItemType.NEW, 10},
-                        new Object[]{0, ShoppingCart.ItemType.NEW, 11},
-                        new Object[]{0, ShoppingCart.ItemType.SECOND_FREE, 1},
-                        new Object[]{50, ShoppingCart.ItemType.SECOND_FREE, 2},
-                        new Object[]{50, ShoppingCart.ItemType.SECOND_FREE, 9},
-                        new Object[]{51, ShoppingCart.ItemType.SECOND_FREE, 10},
-                        new Object[]{80, ShoppingCart.ItemType.SECOND_FREE, 301},
-                        new Object[]{70, ShoppingCart.ItemType.SALE, 1},
-                        new Object[]{70, ShoppingCart.ItemType.SALE, 9},
-                        new Object[]{71, ShoppingCart.ItemType.SALE, 10},
-                        new Object[]{80, ShoppingCart.ItemType.SALE, 110},
-                        new Object[]{0, ShoppingCart.ItemType.REGULAR, 1},
-                        new Object[]{0, ShoppingCart.ItemType.REGULAR, 9},
-                        new Object[]{1, ShoppingCart.ItemType.REGULAR, 10},
-                        new Object[]{80, ShoppingCart.ItemType.REGULAR, 810}
+                        new Object[]{0, new Item("Title", 0.99, 1, ShoppingCart.ItemType.NEW)},
+                        new Object[]{0, new Item("Title", 0.99, 10, ShoppingCart.ItemType.NEW)},
+                        new Object[]{0, new Item("Title", 0.99, 11, ShoppingCart.ItemType.NEW)},
+                        new Object[]{0, new Item("Title", 0.99, 1, ShoppingCart.ItemType.SECOND_FREE)},
+                        new Object[]{50, new Item("Title", 0.99, 2, ShoppingCart.ItemType.SECOND_FREE)},
+                        new Object[]{50, new Item("Title", 0.99, 9, ShoppingCart.ItemType.SECOND_FREE)},
+                        new Object[]{51, new Item("Title", 0.99, 10, ShoppingCart.ItemType.SECOND_FREE)},
+                        new Object[]{80, new Item("Title", 0.99, 301, ShoppingCart.ItemType.SECOND_FREE)},
+                        new Object[]{70, new Item("Title", 0.99, 1, ShoppingCart.ItemType.SALE)},
+                        new Object[]{70, new Item("Title", 0.99, 9, ShoppingCart.ItemType.SALE)},
+                        new Object[]{71, new Item("Title", 0.99, 10, ShoppingCart.ItemType.SALE)},
+                        new Object[]{80, new Item("Title", 0.99, 110, ShoppingCart.ItemType.SALE)},
+                        new Object[]{0, new Item("Title", 0.99, 1, ShoppingCart.ItemType.REGULAR)},
+                        new Object[]{0, new Item("Title", 0.99, 9, ShoppingCart.ItemType.REGULAR)},
+                        new Object[]{1, new Item("Title", 0.99, 10, ShoppingCart.ItemType.REGULAR)},
+                        new Object[]{80, new Item("Title", 0.99, 810, ShoppingCart.ItemType.REGULAR)}
                 )
         ).stream();
     }
@@ -58,7 +58,7 @@ class ShoppingCartTest {
      */
     @ParameterizedTest
     @MethodSource("testCalculateDiscountData")
-    public void testCalculateDiscount(int discount, ShoppingCart.ItemType type, int quantity) {
-        assertEquals(discount, ShoppingCart.calculateDiscount(type, quantity));
+    public void testCalculateDiscount(int discount, Item item) {
+        assertEquals(discount, item.getDiscount());
     }
 }

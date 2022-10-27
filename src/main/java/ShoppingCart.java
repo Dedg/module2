@@ -34,12 +34,7 @@ public class ShoppingCart {
             throw new IllegalArgumentException("Illegal price");
         if (quantity <= 0)
             throw new IllegalArgumentException("Illegal quantity");
-        Item item = new Item();
-        item.setTitle(title);
-        item.setPrice(price);
-        item.setQuantity(quantity);
-        item.setType(type);
-        items.add(item);
+        items.add(new Item(title, price, quantity, type));
     }
 
     /**
@@ -68,8 +63,8 @@ public class ShoppingCart {
         double total = 0.00;
         int index = 0;
         for (Item item : items) {
-            int discount = calculateDiscount(item.getType(), item.getQuantity());
-            double itemTotal = item.getPrice() * item.getQuantity() * (100.00 - discount) / 100.00;
+            int discount = item.getDiscount();
+            double itemTotal = item.getTotal();
             lines.add(new String[]{
                 String.valueOf(++index),
                 item.getTitle(),
@@ -147,76 +142,7 @@ public class ShoppingCart {
             sb.append(" ");
         sb.append(" ");
     }
-    /**
-     * Calculates item's discount.
-     * For NEW item discount is 0%;
-     * For SECOND_FREE item discount is 50% if quantity > 1
-     * For SALE item discount is 70%
-     * For each full 10 not NEW items item gets additional 1% discount,
-     * but not more than 80% total
-     */
-    public static int calculateDiscount(ItemType type, int quantity){
-        int discount = 0;
-        switch (type) {
-            case NEW:
-                return 0;
-            case REGULAR:
-                discount = 0;
-                break;
-            case SECOND_FREE:
-                if (quantity > 1)
-                    discount = 50;
-                break;
-            case SALE:
-                discount = 70;
-                break;
-        }
-        if (discount < 80) {
-            discount += quantity / 10;
-        if (discount > 80)
-            discount = 80;
-        }
-        return discount;
-    }
-    /** item info */
-    private static class Item{
-        private String title;
-        private double price;
-        private int quantity;
-        private ItemType type;
 
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public void setPrice(Double price) {
-            this.price = price;
-        }
-
-        public double getPrice() {
-            return this.price;
-        }
-
-        public int getQuantity() {
-            return this.quantity;
-        }
-
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
-        }
-
-        public ItemType getType() {
-            return type;
-        }
-
-        public void setType(ItemType type) {
-            this.type = type;
-        }
-    }
     /** Container for added items */
     private List<Item> items = new ArrayList<Item>();
 }
