@@ -35,10 +35,10 @@ public class ShoppingCart {
         if (quantity <= 0)
             throw new IllegalArgumentException("Illegal quantity");
         Item item = new Item();
-        item.title = title;
-        item.price = price;
-        item.quantity = quantity;
-        item.type = type;
+        item.setTitle(title);
+        item.setPrice(price);
+        item.setQuantity(quantity);
+        item.setType(type);
         items.add(item);
     }
 
@@ -68,13 +68,13 @@ public class ShoppingCart {
         double total = 0.00;
         int index = 0;
         for (Item item : items) {
-            int discount = calculateDiscount(item.type, item.quantity);
-            double itemTotal = item.price * item.quantity * (100.00 - discount) / 100.00;
+            int discount = calculateDiscount(item.getType(), item.getQuantity());
+            double itemTotal = item.getPrice() * item.getQuantity() * (100.00 - discount) / 100.00;
             lines.add(new String[]{
                 String.valueOf(++index),
-                item.title,
-                MONEY.format(item.price),
-                String.valueOf(item.quantity),
+                item.getTitle(),
+                MONEY.format(item.getPrice()),
+                String.valueOf(item.getQuantity()),
                 (discount == 0) ? "-" : (String.valueOf(discount) + "%"),
                 MONEY.format(itemTotal)
             });
@@ -180,10 +180,42 @@ public class ShoppingCart {
     }
     /** item info */
     private static class Item{
-        String title;
-        double price;
-        int quantity;
-        ItemType type;
+        private String title;
+        private double price;
+        private int quantity;
+        private ItemType type;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public void setPrice(Double price) {
+            this.price = price;
+        }
+
+        public double getPrice() {
+            return this.price;
+        }
+
+        public int getQuantity() {
+            return this.quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+
+        public ItemType getType() {
+            return type;
+        }
+
+        public void setType(ItemType type) {
+            this.type = type;
+        }
     }
     /** Container for added items */
     private List<Item> items = new ArrayList<Item>();
