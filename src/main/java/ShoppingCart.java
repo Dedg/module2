@@ -1,5 +1,8 @@
 import java.util.*;
 import java.text.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 /**
 * Containing items and calculating price.
 */
@@ -56,27 +59,17 @@ public class ShoppingCart {
     public String formatTicket(){
         if (items.size() == 0)
             return "No items.";
-        List<String[]> lines = new ArrayList<String[]>();
+
+        double total = items.stream().mapToDouble(Item::getTotal).sum();
+        List<String[]> lines = convertItemsToTableLines();
+
+        return formatTicketTable(total, lines);
+    }
+
+    private static String formatTicketTable(double total, List<String[]> lines) {
         String[] header = {"#","Item","Price","Quan.","Discount","Total"};
+        String[] footer = { String.valueOf(lines.size()),"","","","", MONEY.format(total) };
         int[] align = new int[] { 1, -1, 1, 1, 1, 1 };
-        // formatting each line
-        double total = items.stream().mapToDouble(i -> i.getTotal()).sum();
-        int index = 0;
-        for (Item item : items) {
-            int discount = item.getDiscount();
-            double itemTotal = item.getTotal();
-            lines.add(new String[]{
-                String.valueOf(++index),
-                item.getTitle(),
-                MONEY.format(item.getPrice()),
-                String.valueOf(item.getQuantity()),
-                (discount == 0) ? "-" : (String.valueOf(discount) + "%"),
-                MONEY.format(itemTotal)
-            });
-        }
-        String[] footer = { String.valueOf(index),"","","","", MONEY.format(total) };
-        // formatting table
-        // column max length
         int[] width = new int[]{0,0,0,0,0,0};
         for (String[] line : lines)
             for (int i = 0; i < line.length; i++)
@@ -93,11 +86,11 @@ public class ShoppingCart {
         // header
         for (int i = 0; i < header.length; i++)
             appendFormatted(sb, header[i], align[i], width[i]);
-            sb.append("\n");
+        sb.append("\n");
         // separator
         for (int i = 0; i < lineLength; i++)
             sb.append("-");
-            sb.append("\n");
+        sb.append("\n");
         // lines
         for (String[] line : lines) {
             for (int i = 0; i < line.length; i++)
@@ -115,6 +108,21 @@ public class ShoppingCart {
             appendFormatted(sb, footer[i], align[i], width[i]);
         return sb.toString();
     }
+
+    private List<String[]> convertItemsToTableLines() {
+        AtomicInteger index = new AtomicInteger();
+        return items
+                .stream()
+                .map(item -> new String[]{
+                        String.valueOf(index.incrementAndGet()),
+                        item.getTitle(),
+                        MONEY.format(item.getPrice()),
+                        String.valueOf(item.getQuantity()),
+                        (item.getDiscount() == 0) ? "-" : (item.getDiscount() + "%"),
+                        MONEY.format(item.getTotal())
+                }).collect(Collectors.toList());
+    }
+
     // --- private section -----------------------------------------------------
     private static final NumberFormat MONEY;
         static {
