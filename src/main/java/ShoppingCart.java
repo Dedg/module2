@@ -2,6 +2,7 @@ import java.util.*;
 import java.text.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
 * Containing items and calculating price.
@@ -66,47 +67,60 @@ public class ShoppingCart {
         return formatTicketTable(total, lines);
     }
 
+    // --- private section -----------------------------------------------------
     private static String formatTicketTable(double total, List<String[]> lines) {
-        String[] header = {"#","Item","Price","Quan.","Discount","Total"};
-        String[] footer = { String.valueOf(lines.size()),"","","","", MONEY.format(total) };
-        int[] align = new int[] { 1, -1, 1, 1, 1, 1 };
-        int[] width = new int[]{0,0,0,0,0,0};
+        String[] header = {"#", "Item", "Price", "Quan.", "Discount", "Total"};
+        String[] footer = {String.valueOf(lines.size()), "", "", "", "", MONEY.format(total)};
+        int[] align = new int[]{1, -1, 1, 1, 1, 1};
+        int[] width = new int[]{0, 0, 0, 0, 0, 0};
         for (String[] line : lines)
-            for (int i = 0; i < line.length; i++)
-                width[i] = (int) Math.max(width[i], line[i].length());
-        for (int i = 0; i < header.length; i++)
-            width[i] = (int) Math.max(width[i], header[i].length());
-        for (int i = 0; i < footer.length; i++)
-            width[i] = (int) Math.max(width[i], footer[i].length());
-        // line length
-        int lineLength = width.length - 1;
-        for (int w : width)
-            lineLength += w;
+            adjustColumnWidth(width, line);
+        adjustColumnWidth(width, header);
+        adjustColumnWidth(width, footer);
+        int lineLength = IntStream.of(width).sum() + width.length - 1;
         StringBuilder sb = new StringBuilder();
-        // header
-        for (int i = 0; i < header.length; i++)
-            appendFormatted(sb, header[i], align[i], width[i]);
-        sb.append("\n");
-        // separator
-        for (int i = 0; i < lineLength; i++)
-            sb.append("-");
-        sb.append("\n");
-        // lines
+        appendFormattedLine(header, align, width, sb, true);
+        appendSeparator(lineLength, sb);
         for (String[] line : lines) {
-            for (int i = 0; i < line.length; i++)
-                appendFormatted(sb, line[i], align[i], width[i]);
-                sb.append("\n");
+            appendFormattedLine(line, align, width, sb, true);
         }
-        if (lines.size() > 0) {
-            // separator
-            for (int i = 0; i < lineLength; i++)
-                sb.append("-");
-            sb.append("\n");
-        }
-        // footer
-        for (int i = 0; i < footer.length; i++)
-            appendFormatted(sb, footer[i], align[i], width[i]);
+        appendSeparator(lineLength, sb);
+        appendFormattedLine(footer, align, width, sb, false);
         return sb.toString();
+    }
+
+    /**
+     * Appends separator to sb
+     * @param lineLength specifies length of separator line
+     * @param sb StringBuilder to append value to
+     */
+    private static void appendSeparator(int lineLength, StringBuilder sb) {
+        sb.append("-".repeat(lineLength));
+        sb.append("\n");
+    }
+
+    /**
+     * Appends to sb formatted value of all lines
+     * @param lines string array of lines
+     * @param align -1 for align left, 0 for center and +1 for align right.
+     * @param width of line
+     * @param sb StringBuilder to append value to
+     * @param newLine specifies whether new line should be appended
+     */
+    private static void appendFormattedLine(String[] lines, int[] align, int[] width, StringBuilder sb, Boolean newLine) {
+        for (int i = 0; i < lines.length; i++)
+            appendFormatted(sb, lines[i], align[i], width[i]);
+        if (newLine) sb.append("\n");
+    }
+
+    /**
+     * Adgust column width
+     * @param width expected width of the column
+     * @param columns list
+     */
+    private static void adjustColumnWidth(int[] width, String[] columns) {
+        for (int i = 0; i < columns.length; i++)
+            width[i] = (int) Math.max(width[i], columns[i].length());
     }
 
     private List<String[]> convertItemsToTableLines() {
@@ -123,7 +137,6 @@ public class ShoppingCart {
                 }).collect(Collectors.toList());
     }
 
-    // --- private section -----------------------------------------------------
     private static final NumberFormat MONEY;
         static {
             DecimalFormatSymbols symbols = new DecimalFormatSymbols();
