@@ -60,7 +60,7 @@ public class ShoppingCart {
         String[] header = {"#","Item","Price","Quan.","Discount","Total"};
         int[] align = new int[] { 1, -1, 1, 1, 1, 1 };
         // formatting each line
-        double total = 0.00;
+        double total = items.stream().mapToDouble(i -> i.getTotal()).sum();
         int index = 0;
         for (Item item : items) {
             int discount = item.getDiscount();
@@ -73,7 +73,6 @@ public class ShoppingCart {
                 (discount == 0) ? "-" : (String.valueOf(discount) + "%"),
                 MONEY.format(itemTotal)
             });
-            total += itemTotal;
         }
         String[] footer = { String.valueOf(index),"","","","", MONEY.format(total) };
         // formatting table

@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -60,5 +61,45 @@ class ShoppingCartTest {
     @MethodSource("testCalculateDiscountData")
     public void testCalculateDiscount(int discount, Item item) {
         assertEquals(discount, item.getDiscount());
+    }
+
+
+    /**
+     * Test of formatTicket method, of class ShoppingCart.
+     */
+    @Test
+    public void testFormatTicket() {
+        ShoppingCart cart = new ShoppingCart();
+        assertEquals("No items.", cart.formatTicket());
+        cart.addItem("Apple", 0.99, 5, ShoppingCart.ItemType.NEW);
+        assertEquals("# Item  Price Quan. Discount Total \n" +
+                "----------------------------------\n" +
+                "1 Apple  $.99     5        - $4.95 \n" +
+                "----------------------------------\n" +
+                "1                            $4.95 ", cart.formatTicket());
+        cart.addItem("Banana", 20.00, 4, ShoppingCart.ItemType.SECOND_FREE);
+        assertEquals("# Item    Price Quan. Discount  Total \n" +
+                "-------------------------------------\n" +
+                "1 Apple    $.99     5        -  $4.95 \n" +
+                "2 Banana $20.00     4      50% $40.00 \n" +
+                "-------------------------------------\n" +
+                "2                              $44.95 ", cart.formatTicket());
+        cart.addItem("A long piece of toilet paper", 17.20, 1, ShoppingCart.ItemType.SALE);
+        assertEquals("# Item                          Price Quan. Discount  Total \n" +
+                "-----------------------------------------------------------\n" +
+                "1 Apple                          $.99     5        -  $4.95 \n" +
+                "2 Banana                       $20.00     4      50% $40.00 \n" +
+                "3 A long piece of toilet paper $17.20     1      70%  $5.16 \n" +
+                "-----------------------------------------------------------\n" +
+                "3                                                    $50.11 ", cart.formatTicket());
+        cart.addItem("Nails", 2.00, 500, ShoppingCart.ItemType.REGULAR);
+        assertEquals("# Item                          Price Quan. Discount   Total \n" +
+                "------------------------------------------------------------\n" +
+                "1 Apple                          $.99     5        -   $4.95 \n" +
+                "2 Banana                       $20.00     4      50%  $40.00 \n" +
+                "3 A long piece of toilet paper $17.20     1      70%   $5.16 \n" +
+                "4 Nails                         $2.00   500      50% $500.00 \n" +
+                "------------------------------------------------------------\n" +
+                "4                                                    $550.11 ", cart.formatTicket());
     }
 }
